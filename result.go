@@ -5,17 +5,14 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"os"
 	"sort"
+	"strconv"
 	"time"
 
 	nakamaCommands "github.com/challenge-league/nakama-go/commands"
 	"github.com/heroiclabs/nakama-common/runtime"
 	log "github.com/micro/go-micro/v2/logger"
-)
-
-const (
-	//CONSENSUS_RATIO = 0.51
-	CONSENSUS_RATIO = 0.001
 )
 
 func updateMatchResults(result *nakamaCommands.MatchResult, matchState *nakamaCommands.MatchState) []*nakamaCommands.MatchResult {
@@ -44,7 +41,12 @@ func isMatchResultExist(result *nakamaCommands.MatchResult, matchState *nakamaCo
 }
 
 func isResultConsensusEstablished(s *nakamaCommands.MatchState) (isConsensusEstablished bool, team *nakamaCommands.Team) {
-	if float64(len(s.Results))/float64(len(s.Teams)*len(s.Teams[0].TeamUsers)) >= float64(CONSENSUS_RATIO) {
+	resultConsensusRatio, err := strconv.ParseFloat(os.Getenv("RESULT_CONSENSUS_RATIO"), 64)
+	if err != nil {
+		log.Error(err)
+		return false, nil
+	}
+	if float64(len(s.Results))/float64(len(s.Teams)*len(s.Teams[0].TeamUsers)) >= resultConsensusRatio {
 		teamResults := make(map[int]int)
 		for i := 0; i < len(s.Teams); i++ {
 			teamResults[i] = 0
@@ -63,7 +65,7 @@ func isResultConsensusEstablished(s *nakamaCommands.MatchState) (isConsensusEsta
 		}
 
 		if drawCount > 0 {
-			if float64(len(s.Results))/float64(drawCount) >= float64(CONSENSUS_RATIO) {
+			if float64(len(s.Results))/float64(drawCount) >= resultConsensusRatio {
 				return true, nil
 			}
 		}
