@@ -349,6 +349,12 @@ func notifyDiscordNewMatch(s *nakamaCommands.MatchState) error {
 		log.Errorf("Error %+v", err)
 		return fmt.Errorf("Failed to notify users for match %v, got %w", s.MatchID, err)
 	}
+
+	if _, err := notifyDiscordChannel(os.Getenv("DISCORD_ANNOUNCEMENTS_CHALLENGE_CHANNEL_ID"), message); err != nil {
+		log.Errorf("Error %+v", err)
+		return fmt.Errorf("Failed to notify users for match %v, got %w", s.MatchID, err)
+	}
+
 	return nil
 }
 
