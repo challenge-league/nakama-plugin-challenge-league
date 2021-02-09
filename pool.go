@@ -147,7 +147,7 @@ func poolPick(ctx context.Context, nk runtime.NakamaModule, matchID string, capt
 	log.Infof("Next CaptainTurnUserID %v", nextCaptainTurnUserID)
 
 	nextCaptainTurnUserIDMsg := ""
-	if nextCaptainTurnUserID != matchState.CaptainTurnUserID {
+	if nextCaptainTurnUserID != matchState.CaptainTurnUserID && nextCaptainTurnUserID != "" {
 		nextCaptainTurnUserIDMsg = fmt.Sprintf("\nCaptain <@%v>'s pick turn!", nextCaptainTurnUserID)
 		matchState.CaptainTurnUserID = nextCaptainTurnUserID
 	}
