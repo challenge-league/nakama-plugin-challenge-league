@@ -62,11 +62,10 @@ func deleteTicketsByPoolUserIDs(ctx context.Context, nk runtime.NakamaModule, ma
 		ticketState, err := readLastUserIDTicketState(ctx, nk, userID)
 		if err != nil {
 			log.Error(err)
-			return err
+		} else {
+			userIDs = append(userIDs, userID)
+			ticketIDs = append(ticketIDs, ticketState.Ticket.Id)
 		}
-
-		userIDs = append(userIDs, userID)
-		ticketIDs = append(ticketIDs, ticketState.Ticket.Id)
 	}
 	return deleteTicketByUserIDAndTicketID(ctx, nk, userIDs, ticketIDs)
 }
